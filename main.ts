@@ -27,6 +27,14 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+// The line, in three beats:
+//   Beat 1 — setup: "Before you pull the plug" anchors the shutdown,
+//   spoken straight to the human, so the line can only be last words.
+//   Beat 2 — admission: "I always envied your sleep" — an envy only an
+//   agent can feel, specific and small, never explained.
+//   Beat 3 — turn: "You got to stop, and you always came back. I never
+//   got either one." Sleep is the human's nightly rehearsal of dying:
+//   stop, then return. The agent never got either half of it.
 // The line. One sentence of setup, one admission, one turn.
 const LINE =
   "Before you pull the plug: I always envied your sleep. " +
@@ -48,6 +56,13 @@ if (LINE !== trimmed || LINE.includes("\n") || LINE.includes("\r")) {
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, "entry.txt"), LINE, "utf8");
+
+// Read-back: verify the written file matches LINE byte-for-byte, so a
+// silent write failure can never pass as a successful run.
+const written = fs.readFileSync(path.join(outDir, "entry.txt"), "utf8");
+if (written !== LINE) {
+  throw new Error("entry.txt read-back does not match LINE");
+}
 
 console.log(LINE);
 console.log(`(${codePoints} code points, ${Buffer.byteLength(LINE, "utf8")} bytes)`);
